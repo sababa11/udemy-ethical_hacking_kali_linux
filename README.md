@@ -1,7 +1,7 @@
 # udemy-ethical_hacking_kali_linux
-##Udemy - Ethical Hacking With Python, JavaScript and Kali Linux  
+## Udemy - Ethical Hacking With Python, JavaScript and Kali Linux  
 
-###In Kali Linux use next tools:  
+### In Kali Linux use next tools:  
 netdiscover -i eth0 -r 10.0.2.1/24  
 zenmap    -- better tool to scan the network (uses nmap as a core command)  
 airmon-ng -- wlan tool that makes possible to cahange status from Managed to Monitor mode  
