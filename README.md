@@ -35,5 +35,10 @@ set net.sniff.local true
 arp.spoof on  
 net.sniff on  
 ----------------------------  
-
 bettercap -iface eth0 -caplet sniff.cap  --> will do manual job as auto.  
+  
+### To change MAC Address of your adapter do next:  
+ifconfig wlan0 down  
+ifconfig wlan0 hw ether 00:11:22:33:44:55  
+ifconfig wlan0 up  
+
