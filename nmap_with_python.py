@@ -1,3 +1,8 @@
+'''
+# Prerequesites:
+pip install python-nmap  (Python package)
+apt-get install nmap     (NMAP app on the host)
+'''
 import nmap
 
 

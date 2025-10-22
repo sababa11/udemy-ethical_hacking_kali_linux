@@ -15,7 +15,7 @@ aircrack-ng demo-handshake-01.cap -w wordlist  --> will crack demo-handshake aga
 ### In Kali linux try introduction for "bettercap":  
 
 sudo bettercap  --> enter to the console of application  
-help            --> to see which odules are available/enabled  
+help            --> to see which modules are available/enabled  
 help net.probe  --> will send UDP packets to probe the network on connected devices  
 net.probe on    --> turn it on  
 help arp.spoof  -->  
