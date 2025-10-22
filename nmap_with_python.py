@@ -38,7 +38,7 @@ def main():
         print(scanner[ip_addr].all_protocols())
         print("Open Ports: %s", scanner[ip_addr]['tcp'].keys())
     else:
-        print("Please enter a valid option(1,2,3).")
+        print("Please enter a valid option (1, 2 or 3)")
 
 if __name__ == "__main__":
     main()
