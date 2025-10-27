@@ -77,14 +77,19 @@ def work(config_dict):
         config_dict['queue'].task_done()
         return True
 
-def create_threads(obj_socket, ip_address, int_port, int_buff, queue, int_threads):
+def create_threads(config_dict):
+    queue = config_dict['queue']
+    int_threads = config_dict['int_threads']
     for i in range(int_threads):
-        obj_thread = threading.Thread(target=work, args=(obj_socket, ip_address, int_port, int_buff))
+        obj_thread = threading.Thread(target=work, args=(config_dict))
         obj_thread.daemon = True
         obj_thread.start()
     queue.join()
 
-def create_jobs(queue, int_threads, array_jobs):
+def create_jobs(config_dict):
+    queue = config_dict['queue']
+    int_threads = config_dict['int_threads']
+    array_jobs = config_dict['array_jobs']
     for i in range(array_jobs):
         queue.put(int_threads)
     queue.join()
