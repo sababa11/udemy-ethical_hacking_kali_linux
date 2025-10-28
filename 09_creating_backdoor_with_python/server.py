@@ -2,7 +2,6 @@
 nc -vv -l -p 8080  #Listen to the 8080 port locally
 """
 import socket, os, time, threading, sys
-from ipaddress import ip_address
 from queue import Queue
 
 decode_utf8 = lambda s: s.decode('utf-8')
