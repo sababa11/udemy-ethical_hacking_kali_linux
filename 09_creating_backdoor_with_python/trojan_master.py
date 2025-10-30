@@ -35,6 +35,7 @@ class TrojanMaster(threading.Thread):
             elif command == "exit":
                 self.send_message(command)
                 self.close()
+                break
             else:
                 self.send_message(command)
                 print(self.receive_message())
@@ -50,7 +51,6 @@ def main():
     conf_dict = {"target_host": "127.0.0.1", "target_port": 8080}
     master_instance = TrojanMaster(conf_dict)
     master_instance.run()
-    master_instance.close()
 
 if __name__ == '__main__':
     error_code = main()
